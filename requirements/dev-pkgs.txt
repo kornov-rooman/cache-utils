@@ -1,0 +1,4 @@
+aiocache==0.10.0
+
+bumpversion
+tox

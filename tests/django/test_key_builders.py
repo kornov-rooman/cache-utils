@@ -5,11 +5,10 @@ from cache_utils.key_builders.django import build_django_model_cache_key
 from .models import Profile
 
 pytestmark = [
-    pytest.mark.unit,
-    pytest.mark.key_builders,
+    pytest.mark.django_db,
 
     pytest.mark.django,
-    pytest.mark.django_key_builders,
+    pytest.mark.key_builders,
 ]
 
 

@@ -64,14 +64,14 @@ def async_caches_result(
                 'cache_key': built_cache_key,
             }
 
-        async def delete_cache(*args, **kwargs):
+        async def delete_cache(*args, **kwargs) -> bool:
             cache = caches.get(cache_alias)  # aiocache
 
             built_cache_key = cache_key or cache_key_builder(co_name, *args, **kwargs)
             logger.debug(f'delete_cache::cache_key = "{built_cache_key}"')
 
             await cache.increment(f'delete_cache_count::{built_cache_key}')  # aiocache
-            await cache.delete(built_cache_key)  # aiocache
+            return await cache.delete(built_cache_key)  # aiocache
 
         wrapper.cache_info = cache_info
         wrapper.delete_cache = delete_cache

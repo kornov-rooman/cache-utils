@@ -68,14 +68,14 @@ def caches_result(
                 'cache_key': built_cache_key,
             }
 
-        def delete_cache(*args, **kwargs):
+        def delete_cache(*args, **kwargs) -> bool:
             cache = caches.get(cache_alias)  # django cache
 
             built_cache_key = cache_key or cache_key_builder(co_name, *args, **kwargs, field_names=field_names)
             logger.debug(f'delete_cache::cache_key = "{built_cache_key}"')
 
             cache.increment(f'delete_cache_count::{built_cache_key}')  # django cache
-            cache.delete(built_cache_key)  # django cache
+            return cache.delete(built_cache_key)  # django cache
 
         wrapper.cache_info = cache_info
         wrapper.delete_cache = delete_cache

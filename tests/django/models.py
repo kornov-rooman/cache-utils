@@ -1,8 +1,6 @@
 from django.db import models
 
 
-class SomeModel(models.Model):
-    some_field = models.CharField('Some Field', max_length=255, blank=False, null=False, default='some field value')
-
-    class Meta:
-        app_label = 'tests'
+class Profile(models.Model):
+    first_name = models.CharField('First name', max_length=255, blank=False, null=False)
+    last_name = models.CharField('Last name', max_length=255, blank=False, null=False)

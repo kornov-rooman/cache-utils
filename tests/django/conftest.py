@@ -13,7 +13,7 @@ def pytest_configure():
             }
         },
         SECRET_KEY='secret',
-        ROOT_URLCONF='tests.urls',
+        ROOT_URLCONF='tests.django.urls',
         MIDDLEWARE=(
             'django.middleware.common.CommonMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',
@@ -21,7 +21,7 @@ def pytest_configure():
             'django.contrib.messages.middleware.MessageMiddleware',
         ),
         INSTALLED_APPS=(
-            'tests',
+            'tests.django',
         )
     )
 

@@ -5,6 +5,7 @@ from cache_utils.key_builders.pure import build_func_cache_key
 pytestmark = [
     pytest.mark.unit,
     pytest.mark.key_builders,
+
     pytest.mark.pure_key_builders,
 ]
 

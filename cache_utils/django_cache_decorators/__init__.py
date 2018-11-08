@@ -1,0 +1,1 @@
+from .django_cache_decorator import caches_result

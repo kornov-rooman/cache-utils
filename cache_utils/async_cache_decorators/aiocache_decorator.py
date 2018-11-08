@@ -4,14 +4,10 @@ from functools import wraps
 
 from aiocache import caches
 
-from cache_utils.key_builders import default_cache_builder
+from cache_utils.key_builders.pure import default_cache_builder
 from cache_utils.predicates import default_predicate
 
 logger = logging.getLogger(__name__)
-
-__all__ = (
-    'async_caches_result',
-)
 
 
 def async_caches_result(

@@ -28,34 +28,48 @@ def caches_result(
 
         @wraps(func)
         def wrapper(*args, **kwargs) -> t.Any:
-            cache = caches.get(cache_alias)  # django cache
+            cache = caches[cache_alias]  # django cache
 
-            built_cache_key = cache_key or cache_key_builder(co_name, *args, **kwargs, field_names=field_names)
+            self = args[0]  # TODO: make it better
+            built_cache_key = \
+                cache_key or cache_key_builder(co_name, *args, **kwargs, instance=self, field_names=field_names)
             logger.debug(f'cache_key = "{built_cache_key}"')
 
             result = cache.get(built_cache_key)  # django cache
             if predicate(result):
                 logger.debug('HIT CACHE')
 
-                cache.increment(f'hits::{built_cache_key}')  # django cache
+                if cache.get(f'hits::{built_cache_key}') is None:
+                    cache.set(f'hits::{built_cache_key}', 0)
+                cache.incr(f'hits::{built_cache_key}')  # django cache
                 return result
 
             result = func(*args, **kwargs)
             logger.debug('MISS CACHE')
 
-            cache.increment(f'misses::{built_cache_key}')  # django cache
-            cache.set(built_cache_key, result, ttl=ttl)  # django cache
+            if cache.get(f'misses::{built_cache_key}') is None:
+                cache.set(f'misses::{built_cache_key}', 0)
+            cache.incr(f'misses::{built_cache_key}')  # django cache
+            cache.set(built_cache_key, result, ttl)  # django cache
             return result
 
         def cache_info(*args, **kwargs) -> dict:
-            cache = caches.get(cache_alias)  # django cache
+            cache = caches[cache_alias]  # django cache
 
-            built_cache_key = cache_key or cache_key_builder(co_name, *args, **kwargs, field_names=field_names)
+            self = args[0]  # TODO: make it better
+            built_cache_key = \
+                cache_key or cache_key_builder(co_name, *args, **kwargs, instance=self, field_names=field_names)
             logger.debug(f'cache_info::cache_key = "{built_cache_key}"')
 
-            hits = cache.increment(f'hits::{built_cache_key}', delta=0)  # django cache
-            misses = cache.increment(f'misses::{built_cache_key}', delta=0)  # django cache
-            delete_cache_count = cache.increment(f'delete_cache_count::{built_cache_key}', delta=0)  # django cache
+            if cache.get(f'hits::{built_cache_key}') is None:
+                cache.set(f'hits::{built_cache_key}', 0)
+            hits = cache.incr(f'hits::{built_cache_key}', 0)  # django cache
+            if cache.get(f'misses::{built_cache_key}') is None:
+                cache.set(f'misses::{built_cache_key}', 0)
+            misses = cache.incr(f'misses::{built_cache_key}', 0)  # django cache
+            if cache.get(f'delete_cache_count::{built_cache_key}') is None:
+                cache.set(f'delete_cache_count::{built_cache_key}', 0)
+            delete_cache_count = cache.incr(f'delete_cache_count::{built_cache_key}', 0)  # django cache
 
             return {
                 'hits': hits,
@@ -69,13 +83,17 @@ def caches_result(
             }
 
         def delete_cache(*args, **kwargs) -> bool:
-            cache = caches.get(cache_alias)  # django cache
+            cache = caches[cache_alias]  # django cache
 
-            built_cache_key = cache_key or cache_key_builder(co_name, *args, **kwargs, field_names=field_names)
+            self = args[0]  # TODO: make it better
+            built_cache_key = \
+                cache_key or cache_key_builder(co_name, *args, **kwargs, instance=self, field_names=field_names)
             logger.debug(f'delete_cache::cache_key = "{built_cache_key}"')
 
-            cache.increment(f'delete_cache_count::{built_cache_key}')  # django cache
-            return cache.delete(built_cache_key)  # django cache
+            if cache.get(f'delete_cache_count::{built_cache_key}') is None:
+                cache.set(f'delete_cache_count::{built_cache_key}', 0)
+            cache.incr(f'delete_cache_count::{built_cache_key}')  # django cache
+            return cache.delete(built_cache_key) or True  # django cache
 
         wrapper.cache_info = cache_info
         wrapper.delete_cache = delete_cache

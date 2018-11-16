@@ -10,9 +10,15 @@ __all__ = (
 )
 
 
-def build_django_model_cache_key(func_name: str, *args,
-                                 instance: 'Model', field_names: t.Sequence[str], **kwargs) -> str:
+def build_django_model_cache_key(func_name: str,
+                                 *args,
+                                 field_names: t.Sequence[str],
+                                 **kwargs) -> str:
     cache_key = None
+
+    args = list(args)
+    instance = args[0]
+    args = args[0:]
 
     # TODO: app_label, class_name
 

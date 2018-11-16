@@ -1,6 +1,8 @@
 import pytest
 
-from cache_utils.async_cache_decorators import async_caches_result
+import asyncio
+
+from cache_utils import caches_result
 
 pytestmark = [
     pytest.mark.asyncio,  # https://github.com/pytest-dev/pytest-asyncio#pytestmarkasyncio
@@ -10,16 +12,18 @@ pytestmark = [
 ]
 
 
-@async_caches_result()
+@caches_result.aiocache
 async def get_timestamp() -> float:
     import datetime
     return datetime.datetime.now().timestamp()
 
 
+@pytest.mark.slow
 async def test_acceptance():
     # should calculate timestamp only once
     timestamp = await get_timestamp()
     for i in range(10):
+        await asyncio.sleep(.1)
         assert await get_timestamp() == timestamp
 
     # should return correct cache info

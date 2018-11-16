@@ -18,6 +18,6 @@ class BuildModelCacheKeyTest:
     def test_ok(self):
         instance = Profile.objects.create(first_name='Tyler', last_name='Durden')
         cache_key = \
-            build_django_model_cache_key('some_method_name', instance=instance, field_names=['first_name', 'last_name'])
+            build_django_model_cache_key('some_method_name', instance, field_names=['first_name', 'last_name'])
 
         assert cache_key == 'django:Profile:first_name:Tyler:last_name:Durden:some_method_name'
